@@ -113,21 +113,21 @@ public class Controller implements Initializable{
 	@FXML
     void clicIso(MouseEvent event) {
     	
-    	System.out.println(" Valeur Degrï¿½s d'isolement : " + diso.get() + "\n");
+    	System.out.println(" Valeur Degrés d'isolement : " + diso.get() + "\n");
     	tAmas.setIsolement(diso.getValue().intValue());
     	valeurCurseurs[0] = diso.getValue();
     }
 	
 	@FXML
     void clicHeter(MouseEvent event) {
-    	System.out.println(" Valeur Degrï¿½s d'heterogï¿½nï¿½itï¿½ : " + hetero.get() + "\n");
+    	System.out.println(" Valeur Degrés d'heterogénéité : " + hetero.get() + "\n");
     	tAmas.setHeterogeneite(hetero.getValue().intValue());
     	valeurCurseurs[3] = hetero.getValue();
     }
 	
 	@FXML
     void clicStabPos(MouseEvent event) {
-    	System.out.println(" Valeur de la stabilitï¿½ de la position du voisinage : " + stabPos.get() + "\n");
+    	System.out.println(" Valeur de la stabilité de la position du voisinage : " + stabPos.get() + "\n");
     	tAmas.setStabilitePosition(stabPos.getValue().intValue());
     	valeurCurseurs[2] = stabPos.getValue();
     }
@@ -241,7 +241,7 @@ public class Controller implements Initializable{
     	else if (kcode.equals(KeyCode.ESCAPE))
     		deleteSelection();
     	
-    	// remise des curseurs ï¿½ leur etat actuel
+    	// remise des curseurs à leur etat actuel
     	Sdiso.setValue(valeurCurseurs[0]);
     	sStabilitePosition.setValue(valeurCurseurs[2]);
     	sHeterogeneite.setValue(valeurCurseurs[3]);
@@ -269,17 +269,17 @@ public class Controller implements Initializable{
     	// Trouvons les coordonnes du clic au niveau de Tr
     	double xcor = event.getSceneX();
     	double ycor = event.getSceneY();
-    	System.out.println("on a cliquï¿½ sur les coordonnï¿½es : " + xcor + " ; " + ycor);
+    	System.out.println("on a cliqué sur les coordonnées : " + xcor + " ; " + ycor);
     	
-    	// la scene prend en compte le 1er xpanel. j'enlï¿½ve donc sa largeur fixe de 500pxl
+    	// la scene prend en compte le 1er xpanel. j'enlève donc sa largeur fixe de 500pxl
     	xcor -= 500;
     	
-    	// les coordonnees des Blobs sont exprimï¿½s en metres ... je transforme donc les pxls en metres.
+    	// les coordonnees des Blobs sont exprimés en metres ... je transforme donc les pxls en metres.
     	double[] tmp = new double[2];
     	tmp[0] = xcor;
     	tmp[1] = ycor;
     	tmp = treel.PxlTometre(tmp);
-    	System.out.println("equivalent en metre ï¿½  : " + tmp[0] + " ; " + tmp[1]);
+    	System.out.println("equivalent en metre à  : " + tmp[0] + " ; " + tmp[1]);
 
     	
     	
@@ -292,7 +292,7 @@ public class Controller implements Initializable{
     	
     	//deleteSelection();
     	
-    	// Trouvons le blob le plus proche de l'endroit cliquï¿½.
+    	// Trouvons le blob le plus proche de l'endroit cliqué.
     	
     	blobToMove = blobActifs.get(0);
     	double distanceMin = calculeDistance(tmp, blobToMove.getBlob().getCoordonnee());
@@ -333,7 +333,7 @@ public class Controller implements Initializable{
 			buttonMouvementAleatoire.setDisable(true);
 			buttonSortirBlob.setDisable(true);
 			//buttonChangerBlob.setDisable(true);
-			System.out.println("Je crï¿½e le serveur");
+			System.out.println("Je crée le serveur");
 			ServerThread server = new ServerThread(tAmas, blobHibernants);
 			System.out.println("Je le run");
 			server.start();
@@ -362,8 +362,8 @@ public class Controller implements Initializable{
 		toriginel = new ToForm();
 		panelToriginel.getChildren().add(toriginel);
 		
-		//appercuBlob = new AppercuBlob();
-		//paneAppercuBlob.getChildren().add(appercuBlob);
+		appercuBlob = new AppercuBlob();
+		paneAppercuBlob.getChildren().add(appercuBlob);
 		
 		// J'initialise chaque sliders.
 		Sdiso.setValue(10);
@@ -396,10 +396,8 @@ public class Controller implements Initializable{
 		Stage tiwindow = new Stage();
 		
 		tideal_exp = new TerrainForm();
-
-		tiwindow.setTitle("Territoire IdÃ©al");
+		tiwindow.setTitle("Territoire Idéal");
 		tiwindow.getIcons().add(new Image(Main.class.getResourceAsStream("icon_blob.png")));
-
 		tiwindow.setScene(new Scene(tideal_exp));
 		tiwindow.show();
 	}
@@ -445,7 +443,7 @@ public class Controller implements Initializable{
 
 	}
 	
-	// ce remove est appelï¿½ par Amak seulement.
+	// ce remove est appelé par Amak seulement.
 	public void remove_blobHibernant(BlobAgent b){
 		toriginel.remove_blob(b.getBlob());
 		if (experience)
@@ -464,8 +462,8 @@ public class Controller implements Initializable{
 		if (experience)
 			tideal_exp.move_blob(b.getBlob());
 		treel.move_blob(b.getBlob());
-		//if (b == blobToMove)
-			//appercuBlob.move_blob(b);
+		if (b == blobToMove)
+			appercuBlob.move_blob(b);
 	}
 	
 	public void move_blobHibernant(Migrant b){
@@ -526,7 +524,7 @@ public class Controller implements Initializable{
 	 *  ******** 		METHODES DE POSITION_THREAD			************************ *
 	 *	**************************************************************************** */
 	
-	// indique si la coordonnï¿½e entrï¿½e en paramï¿½tre est valide, ie si elle n'est pas hors terrain.
+	// indique si la coordonnée entrée en paramètre est valide, ie si elle n'est pas hors terrain.
 	// returne true if ok. 
 	//Ici il s'agit de Tr ou Ti : valide si compris dans un cercle de rayon RayonTerrain et de centre (RayonTerrain;RayonTerrain)
 	private boolean isValideInTi(double[] coo){
@@ -536,7 +534,7 @@ public class Controller implements Initializable{
 	}
 		
 
-	// cette fonction n'est appelï¿½e que si nous sommes en mode test
+	// cette fonction n'est appelée que si nous sommes en mode test
 	public void sortirBlob(Migrant b){
 		Blob tmp = b.getBlob();
 		double[] coo = new double[2];
@@ -554,7 +552,7 @@ public class Controller implements Initializable{
 		tSimuPosition.add_blob(b);
 	}
 	
-	// cette fonction n'est appelï¿½e que si nous sommes en mode test
+	// cette fonction n'est appelée que si nous sommes en mode test
 	public void rentrerBlob(Migrant b){
 		System.out.println("je suis le 1 :" + b.getBlob().getCouleurLaPLusPresente().toString());
 		if (b == blobToMove)
@@ -566,11 +564,11 @@ public class Controller implements Initializable{
 		
 	}
 	
-	// cette fonction n'est appelï¿½e que si nous sommes en mode test
+	// cette fonction n'est appelée que si nous sommes en mode test
 	public void moveBlob(Migrant b, double[] coo){
 		tAmas.move_blob(b, coo);
-		//if (b == blobToMove)
-			//appercuBlob.move_blob(b);
+		if (b == blobToMove)
+			appercuBlob.move_blob(b);
 	}
 
 	public ArrayList<Migrant> getBlobHibernants() {

@@ -1,6 +1,7 @@
 package amak;
 
 import application.Controller;
+import application.ExceptionHandler;
 import business.Blob;
 import business.Critere;
 
@@ -74,126 +75,159 @@ public class Migrant extends BlobAgent{
 	
 	@Override
 	protected void onDecideAndAct() {
-		synchronized(blob.lock)
-		{
-			nbChangements = 0;
-			currentAction = Action.RESTER; // to initialise
-			if (isHome){
-				if(isRiped){
-					if(cptRiped <= 0)
-						isRiped = false;
+		try {
+			synchronized(blob.lock)
+			{
+				nbChangements = 0;
+				currentAction = Action.RESTER; // to initialise
+				if (isHome){
+					if(isRiped){
+						if(cptRiped <= 0)
+							isRiped = false;
+						else
+							cptRiped--;
+					}
 					else
-						cptRiped--;
-				}
+						if(mustRipe())
+							action_murir(); //isRiped = true;
+					
+					action_se_deplacer();
+				}			
 				else
-					if(mustRipe())
-						action_murir(); //isRiped = true;
+					majAspectAgent();
+				BlobAgent agentNeedingHelp = super.getMoreCriticalAgent();
+				Critere most_critic = Most_critical_critere(agentNeedingHelp.getCriticite());
 				
-				action_se_deplacer();
-			}			
-			else
-				majAspectAgent();
-			BlobAgent agentNeedingHelp = super.getMoreCriticalAgent();
-			Critere most_critic = Most_critical_critere(agentNeedingHelp.getCriticite());
-			
-			// Si je suis sans TR/TI ne peux pas me mouvoir. Je ne peux donc pas gérer la criticité de position
-			// Je vais aider le plus critique sur une autre de ses criticités.
-			if (!isHome && most_critic == Critere.Stabilite_position){
-				double[] tmp = agentNeedingHelp.getCriticite();
-				tmp[Critere.Heterogeneite.getValue()] = 0;
-				most_critic = Most_critical_critere(tmp);
+				// Si je suis sans TR/TI ne peux pas me mouvoir. Je ne peux donc pas gérer la criticité de position
+				// Je vais aider le plus critique sur une autre de ses criticités.
+				if (!isHome && most_critic == Critere.Stabilite_position){
+					double[] tmp = agentNeedingHelp.getCriticite();
+					tmp[Critere.Heterogeneite.getValue()] = 0;
+					most_critic = Most_critical_critere(tmp);
+				}
+				
+				 switch (most_critic){
+				 case Isolement:
+					 // too few neighboors -> criticite.ISOLEMENT > 0 -> I have procreate
+					 if(criticite[Critere.Isolement.getValue()] > 0)
+						 action_creer();
+					 break;
+						 
+				 case Stabilite_position:
+					 // only in To
+					 if(isHome)
+						 
+					 
+					 break;
+					 
+				 case Heterogeneite:
+					 // if >0 then it's too homogeneous. --> I change the color in a random one.
+					 // else it's too heterogeneous.  -> I change my color to the most present color
+					 if(criticite[Critere.Heterogeneite.getValue()] > 0)
+						 action_changerCouleur();
+					 else
+						 action_changerCouleur(couleurEnvironnante);
+		
+					 break;
+				 
+				 default:
+					break;		 
+				 }
 			}
-			
-			 switch (most_critic){
-			 case Isolement:
-				 // too few neighboors -> criticite.ISOLEMENT > 0 -> I have procreate
-				 if(criticite[Critere.Isolement.getValue()] > 0)
-					 action_creer();
-				 break;
-					 
-			 case Stabilite_position:
-				 // only in To
-				 if(isHome)
-					 
-				 
-				 break;
-				 
-			 case Heterogeneite:
-				 // if >0 then it's too homogeneous. --> I change the color in a random one.
-				 // else it's too heterogeneous.  -> I change my color to the most present color
-				 if(criticite[Critere.Heterogeneite.getValue()] > 0)
-					 action_changerCouleur();
-				 else
-					 action_changerCouleur(couleurEnvironnante);
-	
-				 break;
-			 
-			 default:
-				break;		 
-			 }
-		}
-		super.onDecideAndAct();
-	
+			super.onDecideAndAct();
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}	
 	}
 	
 	
 	@Override
     protected void onUpdateRender() {
-		
-    	switch(currentAction){
-    	case CREER :
-    		synchronized (this)
-            {
-    			super.controller.add_blobImmaginaire(newFils);
-            }
-			break;
-    		
-		default:
-			if(isHome)
-				synchronized (this)
-		        {
-					super.controller.move_blobHibernant(this);
-		        }
-    		else
-    			synchronized (this)
-    	        {
-    				super.controller.move_blobMigrant(this);
-    	        }
-    		break;
-    	}
-
+		try {
+	    	switch(currentAction){
+	    	case CREER :
+	    		synchronized (this)
+	            {
+	    			super.controller.add_blobImmaginaire(newFils);
+	            }
+				break;
+	    		
+			default:
+				if(isHome)
+					synchronized (this)
+			        {
+						super.controller.move_blobHibernant(this);
+			        }
+	    		else
+	    			synchronized (this)
+	    	        {
+	    				super.controller.move_blobMigrant(this);
+	    	        }
+	    		break;
+	    	}
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
     }
 	
 	public void t0_to_tr(){
-		isHome = false;
-		blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(getAmas().getEnvironment().rayonTerrain * 2));
-		getAmas().getEnvironment().t0_to_tr(this);
-		controller.add_blobMigrant(this);
-		controller.remove_blobHibernant(this);
+		try {
+			isHome = false;
+			blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(getAmas().getEnvironment().rayonTerrain * 2));
+			getAmas().getEnvironment().t0_to_tr(this);
+			controller.add_blobMigrant(this);
+			controller.remove_blobHibernant(this);
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 	
 	public void t0_to_tr(double[] coo){
-		isHome = false;
-		blob.setCoordonnee(coo);
-		getAmas().getEnvironment().t0_to_tr(this);
-		controller.add_blobMigrant(this);
-		controller.remove_blobHibernant(this);
+		try {
+			isHome = false;
+			blob.setCoordonnee(coo);
+			getAmas().getEnvironment().t0_to_tr(this);
+			controller.add_blobMigrant(this);
+			controller.remove_blobHibernant(this);
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 
 	public void tr_to_t0(){
-		isHome = true;
-		blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(100));
-		getAmas().getEnvironment().tr_to_t0(this);
-		controller.add_blobHibernant(this);
-		controller.remove_blobMigrant(this);
+		try {
+			isHome = true;
+			blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(100));
+			getAmas().getEnvironment().tr_to_t0(this);
+			controller.add_blobHibernant(this);
+			controller.remove_blobMigrant(this);
+		}catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 	
 	public void tr_to_t0(double[] coo){
-		isHome = true;
-		blob.setCoordonnee(coo);
-		getAmas().getEnvironment().tr_to_t0(this);
-		controller.add_blobHibernant(this);
-		controller.remove_blobMigrant(this);
+		try {
+			isHome = true;
+			blob.setCoordonnee(coo);
+			getAmas().getEnvironment().tr_to_t0(this);
+			controller.add_blobHibernant(this);
+			controller.remove_blobMigrant(this);
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 
 	
@@ -208,9 +242,16 @@ public class Migrant extends BlobAgent{
 	
 	@Override
     protected double computeCriticality() {
+		double res = 0;
+		try {
 		if(!isHome)
-			return(computeCriticalityInTideal());
-		return(0);
+			res = computeCriticalityInTideal();
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
+		return(res);
 	}
 
 	public boolean isRiped() {

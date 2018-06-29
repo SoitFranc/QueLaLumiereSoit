@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import application.Controller;
+import application.ExceptionHandler;
 import business.Blob;
 import business.Couleur;
 import business.Critere;
@@ -37,11 +38,6 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	protected double nbChangements;
 	protected double moyenneChangements;
 	protected Controller controller;
-	
-	@Override
-	protected void onAgentCycleEnd() {
-		// TODO Auto-generated method stub
-	}
 	
 	// lie aux decisions 'passives' : en fonction de l'etat du voisinage
 	private int nbExperience; // le nombre d'experiences cooperatives. Agit sur la forme
@@ -78,76 +74,93 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		double[] res = new double[2];
 		res[0] = 0;
 		res[1] = 0;
-		int i;
-		for(i = 0; i < maListe.size(); i++){
-			res[0] += maListe.get(i)[0];
-			res[1] += maListe.get(i)[1];
+		try {
+			int i;
+			for(i = 0; i < maListe.size(); i++){
+				res[0] += maListe.get(i)[0];
+				res[1] += maListe.get(i)[1];
+			}
+			res[0] = res[0] / i;
+			res[1] = res[1] / i;
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
 		}
-		res[0] = res[0] / i;
-		res[1] = res[1] / i;
 		return res;
 	}
 	
 	
 	protected void changer_de_couleur_passif(BlobAgent voisin){
-		ArrayList<Couleur> listeMesCouleurs = blob.getGlobules_couleurs();
-		double[] centreVoisin = voisin.getBlob().getCoordonnee().clone();
-		// probleme la coordonnee du voisin pointe en haut a droite. Il faut la centrer.
-		double[] tmp = calcule_moyenne(voisin.getBlob().getGlobules_position());
-		centreVoisin[0] += tmp[0];
-		centreVoisin[1] += tmp[1];
-		
-		// trouvons quel est le globule le plus proche du voisin.
-		ArrayList<double[]> listePosGlob = blob.getGlobules_position();
-		// les position des globules sont relative a la position du blob.
-		// on va donc enlever la position du blob a celle du voisin, pour ne pas calculer la position exacte des globules ï¿½ chaque fois.
-		centreVoisin[0] -= blob.getCoordonnee()[0];
-		centreVoisin[1] -= blob.getCoordonnee()[1];
-		double distance;
-		int indiceMin =  0;
-		double distanceMin = Math.sqrt((centreVoisin[0] - listePosGlob.get(0)[0]) * (centreVoisin[0] - listePosGlob.get(0)[0]) + ((centreVoisin[1] - listePosGlob.get(0)[1]) * (centreVoisin[1] - listePosGlob.get(0)[1])));
-		for (int i = 1; i<listePosGlob.size(); i++)
-		{
-			distance = Math.sqrt((centreVoisin[0] - listePosGlob.get(i)[0]) * (centreVoisin[0] - listePosGlob.get(i)[0]) + ((centreVoisin[1] - listePosGlob.get(i)[1]) * (centreVoisin[1] - listePosGlob.get(i)[1])));
-			if (distance < distanceMin){
-				distanceMin = distance;
-				indiceMin = i;
+		try {
+			ArrayList<Couleur> listeMesCouleurs = blob.getGlobules_couleurs();
+			double[] centreVoisin = voisin.getBlob().getCoordonnee().clone();
+			// probleme la coordonnee du voisin pointe en haut a droite. Il faut la centrer.
+			double[] tmp = calcule_moyenne(voisin.getBlob().getGlobules_position());
+			centreVoisin[0] += tmp[0];
+			centreVoisin[1] += tmp[1];
+			
+			// trouvons quel est le globule le plus proche du voisin.
+			ArrayList<double[]> listePosGlob = blob.getGlobules_position();
+			// les position des globules sont relative a la position du blob.
+			// on va donc enlever la position du blob a celle du voisin, pour ne pas calculer la position exacte des globules ï¿½ chaque fois.
+			centreVoisin[0] -= blob.getCoordonnee()[0];
+			centreVoisin[1] -= blob.getCoordonnee()[1];
+			double distance;
+			int indiceMin =  0;
+			double distanceMin = Math.sqrt((centreVoisin[0] - listePosGlob.get(0)[0]) * (centreVoisin[0] - listePosGlob.get(0)[0]) + ((centreVoisin[1] - listePosGlob.get(0)[1]) * (centreVoisin[1] - listePosGlob.get(0)[1])));
+			for (int i = 1; i<listePosGlob.size(); i++)
+			{
+				distance = Math.sqrt((centreVoisin[0] - listePosGlob.get(i)[0]) * (centreVoisin[0] - listePosGlob.get(i)[0]) + ((centreVoisin[1] - listePosGlob.get(i)[1]) * (centreVoisin[1] - listePosGlob.get(i)[1])));
+				if (distance < distanceMin){
+					distanceMin = distance;
+					indiceMin = i;
+				}
 			}
+	
+			// on modifie la couleur de ce globule en la couleur la plus presente de notre voisin
+			listeMesCouleurs.set(indiceMin, voisin.blob.getCouleurLaPLusPresente());
+			blob.setGlobules_couleurs(listeMesCouleurs);
+			nbChangements++;
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
 		}
-
-		// on modifie la couleur de ce globule en la couleur la plus presente de notre voisin
-		listeMesCouleurs.set(indiceMin, voisin.blob.getCouleurLaPLusPresente());
-		blob.setGlobules_couleurs(listeMesCouleurs);
-		nbChangements++;
 	}
 	
 	
 	// determine le nombre de blobs dans les 4 zones respectivement Nord(N) - Est(E) - Sud(S) - Ouest(W)
 	private Integer[] determinerPositionVoisins() {
 		Integer[] res = new Integer[4];
-		// Nous pouvons dï¿½finir 2 droites (considï¿½rons notre blob (x;y) et le voisin (X;Y) ):
+		// Nous pouvons définir 2 droites (considérons notre blob (x;y) et le voisin (X;Y) ):
 		// (d1) separant W-N de S-W :  Y = X + (y-x)
 		// (d2) separant N-E de W-S :  Y = -X + (y+x)
-		
-		for(int i = 0; i<4; i++) res[i] = Integer.valueOf(0);
-		
-		double ordonnee1 = blob.getCoordonnee()[1] - blob.getCoordonnee()[0]; // ordonnee1 = (y-x)
-		double ordonnee2 = blob.getCoordonnee()[1]  + blob.getCoordonnee()[0]; // ordonnee2 = (y+x)
-		
-		double[] coo;
-		for(BlobAgent voisin : voisins)
+		try {
+			for(int i = 0; i<4; i++) res[i] = Integer.valueOf(0);
+			
+			double ordonnee1 = blob.getCoordonnee()[1] - blob.getCoordonnee()[0]; // ordonnee1 = (y-x)
+			double ordonnee2 = blob.getCoordonnee()[1]  + blob.getCoordonnee()[0]; // ordonnee2 = (y+x)
+			
+			double[] coo;
+			for(BlobAgent voisin : voisins)
+			{
+				coo = voisin.getBlob().getCoordonnee();
+				if(coo[1] > coo[0] + ordonnee1)
+					if(coo[1] > -coo[0] + ordonnee2)
+						res[0]++; //appartient à la zone Nord
+					else
+						res[3]++; // appartient à la zone West
+				else
+					if(coo[1] < -coo[0] + ordonnee2)
+						res[2]++;  // appartient à la zone Sud
+					else
+						res[1]++;	//appartient à la zone Est			
+			}
+		}  catch(Exception e)
 		{
-			coo = voisin.getBlob().getCoordonnee();
-			if(coo[1] > coo[0] + ordonnee1)
-				if(coo[1] > -coo[0] + ordonnee2)
-					res[0]++; //appartient ï¿½ la zone Nord
-				else
-					res[3]++; // appartient ï¿½ la zone West
-			else
-				if(coo[1] < -coo[0] + ordonnee2)
-					res[2]++;  // appartient ï¿½ la zone Sud
-				else
-					res[1]++;	//appartient ï¿½ la zone Est			
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
 		}
 		return res;
 	}
@@ -155,57 +168,77 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	
 	// Le changement de forme se fait en fonction de l'emplacement de voisins
 	protected void changer_de_forme(){
-		blob.changeForme(determinerPositionVoisins());
-		nbExperience = 0;
+		try {
+			blob.changeForme(determinerPositionVoisins());
+			nbExperience = 0;
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 	
 	protected void majAspectAgent(){
-		// La forme s'acquiert a partir d'un nombre d'expï¿½rience atteint.
-		if (nbExperience >= nbExperiencesRequises)
-		{
-			synchronized (getBlob().lock) {
-				changer_de_forme();
-			}
-		}
-		
-		// la pulsation depend du nombre de voisins alentour
-		//blob.setPulsation(voisins.size());
-		
-		// la couleur s'acquiert si un voisin est present depuis un temps defini.
-		Iterator<BlobAgent> it = connaissance.keySet().iterator();
-		while (it.hasNext()) 
-		{
-			BlobAgent blobConnu = (BlobAgent)it.next();
-			if(connaissance.get(blobConnu) > tpsConnaissanceRequise ){
-				synchronized (blobConnu.getBlob().lock) {
-					changer_de_couleur_passif(blobConnu);
+		try {
+			// La forme s'acquiert a partir d'un nombre d'expï¿½rience atteint.
+			if (nbExperience >= nbExperiencesRequises)
+			{
+				synchronized (getBlob().lock) {
+					changer_de_forme();
 				}
-				connaissance.put(blobConnu, 0);
 			}
-			if (!voisins.contains(blobConnu))
-				it.remove();
-		}
-		// ITERATION
-		//if (actionPassive.equals(Action.CHANGER_COULEUR) || currentAction.equals(Action.CHANGER_COULEUR))
+			
+			// la pulsation depend du nombre de voisins alentour
+			//blob.setPulsation(voisins.size());
+			
+			// la couleur s'acquiert si un voisin est present depuis un temps defini.
+			Iterator<BlobAgent> it = connaissance.keySet().iterator();
+			while (it.hasNext()) 
+			{
+				BlobAgent blobConnu = (BlobAgent)it.next();
+				if(connaissance.get(blobConnu) > tpsConnaissanceRequise ){
+					synchronized (blobConnu.getBlob().lock) {
+						changer_de_couleur_passif(blobConnu);
+						actionPassive = Action.CHANGER_COULEUR;
+					}
+					connaissance.put(blobConnu, 0);
+				}
+				if (!voisins.contains(blobConnu))
+					it.remove();
+			}
+			// ITERATION
+			if (actionPassive.equals(Action.CHANGER_COULEUR) || currentAction.equals(Action.CHANGER_COULEUR))
+			{
+				nbExperience++;
+				actionPassive = Action.RESTER;
+			}
+			
+			// maj des connaissances:
+			
+			for(int i = 0; i < voisins.size(); i++){
+				if(connaissance.containsKey(voisins.get(i))){
+					connaissance.put(voisins.get(i), connaissance.get(voisins.get(i)) + 1);
+				}
+				else 
+					connaissance.put(voisins.get(i), 0);
+			}
+		} catch(Exception e)
 		{
-			nbExperience++;
-		}
-		
-		// maj des connaissances:
-		
-		for(int i = 0; i < voisins.size(); i++){
-			if(connaissance.containsKey(voisins.get(i))){
-				connaissance.put(voisins.get(i), connaissance.get(voisins.get(i)) + 1);
-			}
-			else 
-				connaissance.put(voisins.get(i), 0);
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
 		}
 	}
 	
 	
 	@Override
     protected void onPerceive() {
-		getAmas().getEnvironment().generateNeighbours(this);		
+		try {
+			getAmas().getEnvironment().generateNeighbours(this);
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
     }
 	
 	
@@ -217,27 +250,45 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	 * **************************************************************** */
 	
 	protected void action_se_suicider(){
-		currentAction = Action.SE_SUICIDER;
-		getAmas().getEnvironment().removeAgent(this);
-		destroy();
+		try {
+			currentAction = Action.SE_SUICIDER;
+			getAmas().getEnvironment().removeAgent(this);
+			destroy();
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 
 	protected void action_creer(){
-		currentAction = Action.CREER;
-		Blob newBlob = blob.copy_blob();
-		newBlob.setCoordonnee(getAmas().getEnvironment().nouvellesCoordonnees(this, 2));
-		newFils = new Immaginaire(getAmas(), newBlob, controller);
-		getAmas().getEnvironment().addAgent(newFils);		
+		try {
+			currentAction = Action.CREER;
+			Blob newBlob = blob.copy_blob();
+			newBlob.setCoordonnee(getAmas().getEnvironment().nouvellesCoordonnees(this, 2));
+			newFils = new Immaginaire(getAmas(), newBlob, controller);
+			getAmas().getEnvironment().addAgent(newFils);
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 		
 	}
 	
 	protected void action_se_deplacer(){
-		double[] tmp = getAmas().getEnvironment().nouvellesCoordonnees(this, Math.random() * 1.2, pastDirection);
-		blob.setCoordonnee(tmp);
-		currentAction = Action.SE_DEPLACER;
-		
-		directGeneral[0] = 0.6 * pastDirection[0] + 0.4 * directGeneral[0];
-		directGeneral[1] = 0.6 * pastDirection[1] + 0.4 * directGeneral[1];
+		try {
+			double[] tmp = getAmas().getEnvironment().nouvellesCoordonnees(this, Math.random() * 1.2, pastDirection);
+			blob.setCoordonnee(tmp);
+			currentAction = Action.SE_DEPLACER;
+			
+			directGeneral[0] = 0.6 * pastDirection[0] + 0.4 * directGeneral[0];
+			directGeneral[1] = 0.6 * pastDirection[1] + 0.4 * directGeneral[1];
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 	
 	
@@ -245,33 +296,44 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	// je choisis de changer la couleur qui est la plus frequente parmi mes globules.
 	// action de changer de couleur en prenant une couleur aleatoire
 	protected void action_changerCouleur(){
-		// choix d'une nouvelle couleur
-		Couleur[] couleurListe = Couleur.values();
-		int indiceCouleur = (int) (Math.random() * ( couleurListe.length ));
-		Couleur nvlleCouleur = couleurListe[indiceCouleur];
-		
-		
-		Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
-		ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
-		for (int i = 0; i < listeGlobulesCouleur.size(); i++){
-			if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
-				listeGlobulesCouleur.set(i, nvlleCouleur);
+		try {
+			// choix d'une nouvelle couleur
+			Couleur[] couleurListe = Couleur.values();
+			int indiceCouleur = (int) (Math.random() * ( couleurListe.length ));
+			Couleur nvlleCouleur = couleurListe[indiceCouleur];
+			
+			
+			Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
+			ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
+			for (int i = 0; i < listeGlobulesCouleur.size(); i++){
+				if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
+					listeGlobulesCouleur.set(i, nvlleCouleur);
+			}
+			nbChangements++;
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
 		}
-		nbChangements++;
 	}
 	
 	// action de changer de couleur en prenant celle la plus presente dans l'environnement, 
 	// laquelle est donnee en argument.
 	protected void action_changerCouleur(Couleur couleur){
+		try {
 				
-				
-				Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
-				ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
-				for (int i = 0; i < listeGlobulesCouleur.size(); i++){
-					if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
-						listeGlobulesCouleur.set(i, couleur);
-				}
-				nbChangements++;
+			Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
+			ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
+			for (int i = 0; i < listeGlobulesCouleur.size(); i++){
+				if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
+					listeGlobulesCouleur.set(i, couleur);
+			}
+			nbChangements++;
+		}  catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
 	}
 	
 	
@@ -280,7 +342,16 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	 * ************************************************************************ */
 	
 	protected double computeCriticalityIsolement(){
-		return(getAmas().getEnvironment().getIsolement() - voisins.size());
+		double res = 0;
+		try {
+			res = getAmas().getEnvironment().getIsolement() - voisins.size();
+		} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
+		
+		return(res);
 	}
 	
 	protected double computeCriticalityHeterogeneite(){
@@ -328,12 +399,12 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		if(nbBougent < nbOptimal)
 			return(nbOptimal - nbBougent); 
 
-		// le problï¿½me, si trop de blobs bougent autour, je ne veux pas lever la criticitï¿½, afin d'espï¿½rer agir pour une autre criticitï¿½.
+		// le problème, si trop de blobs bougent autour, je ne veux pas lever la criticité, afin d'espérer agir pour une autre criticité.
 		return(0);
 	}
 	
 	/*protected double computeCriticalityStabiliteEtat(){
-		// calcule de la moyenne des changements effectuï¿½s alentour:
+		// calcule de la moyenne des changements effectués alentour:
 		double moyenne = 0;
 		for (int i = 0; i< voisins.size(); i++){
 			moyenne += voisins.get(i).getNbChangements();
@@ -347,13 +418,19 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	}*/
 	
     protected double computeCriticalityInTideal() {
-		criticite[Critere.Isolement.getValue()]= computeCriticalityIsolement();
-		criticite[Critere.Heterogeneite.getValue()] = computeCriticalityHeterogeneite();
-		criticite[Critere.Stabilite_etat.getValue()] = 0;
-		criticite[Critere.Stabilite_position.getValue()] = computeCriticalityStabilitePosition();
-		
-		criticite_globale = criticite[Critere.Heterogeneite.getValue()] + criticite[Critere.Isolement.getValue()] + criticite[Critere.Stabilite_etat.getValue()] + criticite[Critere.Stabilite_position.getValue()];
-		
+    	
+    	try {
+			criticite[Critere.Isolement.getValue()]= computeCriticalityIsolement();
+			criticite[Critere.Heterogeneite.getValue()] = computeCriticalityHeterogeneite();
+			criticite[Critere.Stabilite_etat.getValue()] = 0;
+			criticite[Critere.Stabilite_position.getValue()] = computeCriticalityStabilitePosition();
+			
+			criticite_globale = criticite[Critere.Heterogeneite.getValue()] + criticite[Critere.Isolement.getValue()] + criticite[Critere.Stabilite_etat.getValue()] + criticite[Critere.Stabilite_position.getValue()];
+    	} catch(Exception e)
+		{
+			ExceptionHandler eh = new ExceptionHandler();
+			eh.showError(e);
+		}
         return criticite_globale;
     }
 

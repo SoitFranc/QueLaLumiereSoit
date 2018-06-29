@@ -105,7 +105,6 @@ public class BlobForm extends Parent{
 	public void changeBlob(Blob b, int tailleBlob){
 		synchronized(b.lock)
 		{
-
 			this.tailleBlob = tailleBlob;
 			this.blob = b;
 			this.setTranslateX(blob.getCoordonnee()[0]);//positionnement du blob
@@ -124,7 +123,6 @@ public class BlobForm extends Parent{
 				globules.add(fond_blob);
 		        this.getChildren().add(fond_blob);//ajout du globule	
 			}
-
 		}
 	}
 	
@@ -133,7 +131,6 @@ public class BlobForm extends Parent{
 		
 		synchronized(b.lock)
 		{
-
 			this.tailleBlob = tailleBlob;
 			this.blob = b;
 			this.setTranslateX(coo[0]);//positionnement du blob
@@ -156,8 +153,8 @@ public class BlobForm extends Parent{
 		}
 	}
 	
-	// cette fonction est appelï¿½e si le globule n'est pas mï¿½r et doit ï¿½tre repï¿½sentï¿½ blanc.
-	// la couleur blanche est donc donnï¿½e en paramï¿½tre.
+	// cette fonction est appelée si le globule n'est pas mûr et doit être repésenté blanc.
+	// la couleur blanche est donc donnée en paramètre.
 	public void changeBlob(Blob b, double[] coo, Color couleur, int tailleBlob){
 		
 		synchronized(b.lock)
