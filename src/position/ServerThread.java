@@ -20,8 +20,11 @@ import amak.Migrant;
 // et récolter les données en temps réel
 // pour les transmettres aux environnements correspondants
 
-// REMARQUE : les methodes console_xxx sont vouées à disparaître
-// les méthodes : addBlob, moveBlob et removeBlob doivent rester.
+
+/* Given you're looking for a simple formula, this is probably the simplest way to do it, assuming that the Earth is a sphere of perimeter 40075 km.
+ * Length in meters of 1° of latitude = always 111.32 km
+ * Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
+*/
 
 
 public class ServerThread extends Thread{

@@ -19,7 +19,11 @@ public class Immaginaire extends BlobAgent{
 	
 	@Override
     protected void onUpdateRender() {
-    	try {
+		if (tps + 1000 < System.currentTimeMillis() && !(currentAction.equals(Action.CREER) || currentAction.equals(Action.MURIR))) {
+			return;
+		}
+		tps = System.currentTimeMillis();
+		try {
 			switch(currentAction){
 	    	case SE_DEPLACER :
 	    		synchronized (this)

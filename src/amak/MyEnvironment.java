@@ -24,7 +24,15 @@ public class MyEnvironment extends Environment {
 	/* communication avec l'interface graphique */
 	private Controller controller;
 	
+	/* verrou concernant les Arraylistes qui peuvent être lues par le thread de maj de l'IHM */
+	public final Object lockListes = new Object();	
 	
+	
+	public Object getLockListes() {
+		return lockListes;
+	}
+
+
 	public MyEnvironment(Controller controller) {
 		super(Scheduling.DEFAULT, controller);
 	}

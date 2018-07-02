@@ -1,5 +1,7 @@
 package amak;
 
+import java.sql.Time;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +47,9 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	private int nbExperiencesRequises = 7;
 	private int tpsConnaissanceRequise = 2;
 	
+	protected long tps;
+	
+	
 	@Override
 	protected void onInitialization() {
 		this.blob = (Blob) params[0];
@@ -62,6 +67,7 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		actionPassive = Action.SE_DEPLACER;
 		currentAction = Action.SE_DEPLACER;
 		super.onInitialization();
+		tps = System.currentTimeMillis();
 	}
 	
 	

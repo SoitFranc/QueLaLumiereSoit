@@ -21,7 +21,7 @@
                   <Label fx:id="AffichDiso" layoutX="301.0" layoutY="5.0" prefHeight="132.0" prefWidth="304.0" text="Label" />
                   <SplitPane dividerPositions="0.3001345895020188" layoutX="93.0" layoutY="14.0" prefHeight="230.0" prefWidth="743.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <items>
-                      <AnchorPane fx:id="panelToriginel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="352.0" prefWidth="500.0">
+                      <AnchorPane fx:id="panelToriginel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="352.0" prefWidth="500.0" styleClass="background">
                            <children>
                               <TextField fx:id="textFieldNbBlobs" layoutX="364.0" layoutY="125.0" prefHeight="37.0" prefWidth="124.0" />
                               <Label layoutX="364.0" layoutY="104.0" prefHeight="21.0" prefWidth="124.0" text="Nombre de Blobs :" textFill="#000000" underline="true" />
@@ -30,9 +30,9 @@
                            </children></AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                            <children>
-                              <SplitPane dividerPositions="0.500990099009901" layoutX="11.0" layoutY="35.0" prefHeight="229.0" prefWidth="516.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <SplitPane dividerPositions="0.500990099009901" layoutX="11.0" layoutY="35.0" prefHeight="229.0" prefWidth="516.0" styleClass="background" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <items>
-                                  <AnchorPane fx:id="panelTreel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyPressed" onMouseClicked="#onClicTr" prefHeight="352.0" prefWidth="400.0">
+                                  <AnchorPane fx:id="panelTreel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onKeyPressed" onKeyReleased="#onKeyPressed" onMouseClicked="#onClicTr" prefHeight="352.0" prefWidth="400.0" styleClass="background">
                                        <children>
                                           <Button id="buttonModifierBlob" fx:id="buttonModifierBlob" defaultButton="true" layoutX="287.0" layoutY="8.0" mnemonicParsing="false" onMouseClicked="#onClicButtonModifierBlob" text="?" textFill="#1155f5">
                                              <contextMenu>
@@ -53,7 +53,7 @@
                                                 <Font size="13.0" />
                                              </font></Button>
                                        </children></AnchorPane>
-                                  <AnchorPane fx:id="panelTideal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="352.0" prefWidth="352.0" />
+                                  <AnchorPane fx:id="panelTideal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="352.0" prefWidth="352.0" styleClass="background" />
                                 </items>
                               </SplitPane>
                            </children>
@@ -164,11 +164,11 @@
                         </AnchorPane>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="348.0" prefWidth="100.0">
                            <children>
-                              <TabPane blendMode="SOFT_LIGHT" layoutX="3.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="348.0" prefWidth="638.0" tabClosingPolicy="UNAVAILABLE">
+                              <TabPane blendMode="SOFT_LIGHT" layoutX="3.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="348.0" prefWidth="638.0" styleClass="background" tabClosingPolicy="UNAVAILABLE">
                                 <tabs>
                                   <Tab text="apperçu du BLob">
                                     <content>
-                                      <AnchorPane fx:id="panelBlobSelectione" minHeight="-Infinity" minWidth="-Infinity" prefHeight="302.0" prefWidth="638.0">
+                                      <AnchorPane fx:id="panelBlobSelectione" minHeight="-Infinity" minWidth="-Infinity" prefHeight="302.0" prefWidth="638.0" styleClass="background">
                                              <children>
                                                 <Pane fx:id="paneAppercuBlob" layoutX="163.0" layoutY="11.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" />
                                              </children></AnchorPane>

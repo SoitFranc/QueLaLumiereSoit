@@ -159,6 +159,11 @@ public class AmasThread extends Thread{
 		});	
 		
 	}
-
+	
+	public MyEnvironment getEnvironnement() {
+		return(myAmas.getEnvironment());
+	}
+	
+	
 }
 
