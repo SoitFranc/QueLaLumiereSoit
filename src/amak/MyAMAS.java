@@ -7,13 +7,14 @@ import application.Controller;
 import business.Blob;
 import fr.irit.smac.amak.Amas;
 import fr.irit.smac.amak.Scheduling;
+import fr.irit.smac.amak.tools.Log;
 import javafx.application.Platform;
 
 public class MyAMAS extends Amas<MyEnvironment>{
 	
 	private Controller controller;
 	
-	// genere des coordonnées cartésiennes aleatoires dans un cercle de diametre 100 et de centre 50;50
+	// genere des coordonnï¿½es cartï¿½siennes aleatoires dans un cercle de diametre 100 et de centre 50;50
 	private double[] genererCoordonneeCercle(){
 		boolean isOk = false;
 		double[] res = new double[2];
@@ -49,7 +50,7 @@ public class MyAMAS extends Amas<MyEnvironment>{
 			blob = new Blob(coo[0],coo[1], true);
 
 			
-			// si dans un carré :
+			// si dans un carrï¿½ :
 			//xcor = Math.random() * ( 100 );
 			//ycor = Math.random() * ( 100 );
 			//blob = new Blob(xcor,ycor, true);
@@ -75,26 +76,29 @@ public class MyAMAS extends Amas<MyEnvironment>{
 	}
 	
 	protected void moveAgent(Blob b, BlobAgent agent){
-		Platform.runLater(new Runnable() {
-			public void run() {
+//		Platform.runLater(new Runnable() {
+//			public void run() {
 				agent.setBlob(b);
 				
-				// normalement, prévient donc l'environnement
-			}
-		});
+				// normalement, prï¿½vient donc l'environnement
+//			}
+//		});
 	}
 	
 	protected void removeAgent(Blob b, BlobAgent agent){
-		Platform.runLater(new Runnable() {
-			public void run() {
+//		Platform.runLater(new Runnable() {
+//			public void run() {
 				getEnvironment().getAgents().remove(agent);
 				//agents.remove(agent);
-				// normalement, prévient donc l'environnement
-			}
-		});
+				// normalement, prï¿½vient donc l'environnement
+//			}
+//		});
 		
 	}
 	
-	
+	@Override
+	protected void onSystemCycleEnd() {
+		Log.debug("quela", "cycle end");
+	}
 	
 }

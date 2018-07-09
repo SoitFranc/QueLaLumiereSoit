@@ -20,6 +20,9 @@ public class ExceptionHandler {
     }
  
 	public void showError(Exception e) {
+		e.printStackTrace();
+		System.exit(-1);
+		/*
 	    Alert alert = new Alert(AlertType.ERROR);
 	    alert.setTitle("Error alert");
 	    alert.setHeaderText(e.getMessage());
@@ -37,7 +40,7 @@ public class ExceptionHandler {
 	    // Set content for Dialog Pane
 	    alert.getDialogPane().setContent(dialogPaneContent);
 	
-	    alert.showAndWait();
+	    alert.showAndWait();*/
 	}
 	
 

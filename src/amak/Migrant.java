@@ -1,7 +1,5 @@
 package amak;
 
-import java.time.Clock;
-
 import application.Controller;
 import application.ExceptionHandler;
 import business.Blob;
@@ -16,6 +14,8 @@ public class Migrant extends BlobAgent{
 	//private int cpt_hibernation;
 	//private int nbRipedIdeal = 1;
 	private double tauxMurissement = 5;
+	private double[] cooFutur;
+	private boolean isGoingToMove;
 	
 	
 	
@@ -23,6 +23,7 @@ public class Migrant extends BlobAgent{
 		super(amas, b, controller);
 		isHome = true;
 		isRiped = false;
+		isGoingToMove = false;
 		cptRiped = 1;
 	}
 
@@ -115,11 +116,7 @@ public class Migrant extends BlobAgent{
 						 action_creer();
 					 break;
 						 
-				 case Stabilite_position:
-					 // only in To
-					 if(isHome)
-						 
-					 
+				 case Stabilite_position:					 
 					 break;
 					 
 				 case Heterogeneite:
@@ -209,13 +206,36 @@ public class Migrant extends BlobAgent{
 		}
 	}
 
-	public void tr_to_t0(){
-		try {
+	@Override
+	protected void onAgentCycleEnd() {
+		
+		if(isGoingToMove)
+		{
 			isHome = true;
-			blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(100));
+			isGoingToMove = false;
 			getAmas().getEnvironment().tr_to_t0(this);
+			blob.setCoordonnee(cooFutur);
 			controller.add_blobHibernant(this);
 			controller.remove_blobMigrant(this);
+		}
+		if(currentAction.equals(Action.CREER))
+			getAmas().getEnvironment().addAgent(newFils);
+		
+		
+		super.onAgentCycleEnd();
+	}
+	
+	public void tr_to_t0(){
+		try {
+			
+			cooFutur = blob.genererCoordonneeAleaDansCercle(100);
+			isGoingToMove = true;
+			// j'attends la fin du cycle pour me mettre à jour
+			//blob.setCoordonnee(blob.genererCoordonneeAleaDansCercle(100));
+			/*
+			getAmas().getEnvironment().tr_to_t0(this);
+			controller.add_blobHibernant(this);
+			controller.remove_blobMigrant(this);*/
 		}catch(Exception e)
 		{
 			ExceptionHandler eh = new ExceptionHandler();
@@ -223,19 +243,19 @@ public class Migrant extends BlobAgent{
 		}
 	}
 	
-	public void tr_to_t0(double[] coo){
-		try {
-			isHome = true;
-			blob.setCoordonnee(coo);
-			getAmas().getEnvironment().tr_to_t0(this);
-			controller.add_blobHibernant(this);
-			controller.remove_blobMigrant(this);
-		} catch(Exception e)
-		{
-			ExceptionHandler eh = new ExceptionHandler();
-			eh.showError(e);
-		}
-	}
+//	public void tr_to_t0(double[] coo){
+//		try {
+//			isHome = true;
+//			blob.setCoordonnee(coo);
+//			getAmas().getEnvironment().tr_to_t0(this);
+//			controller.add_blobHibernant(this);
+//			controller.remove_blobMigrant(this);
+//		} catch(Exception e)
+//		{
+//			ExceptionHandler eh = new ExceptionHandler();
+//			eh.showError(e);
+//		}
+//	}
 
 	
 	

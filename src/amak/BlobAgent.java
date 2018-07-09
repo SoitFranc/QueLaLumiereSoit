@@ -14,6 +14,7 @@ import business.Couleur;
 import business.Critere;
 //import business.CriticalityFunction;
 import fr.irit.smac.amak.Agent;
+import fr.irit.smac.amak.tools.Log;
 
 
 enum Action { CREER, SE_DEPLACER, SE_SUICIDER, RESTER, CHANGER_COULEUR, CHANGER_FORME, MURIR };
@@ -139,7 +140,7 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	// determine le nombre de blobs dans les 4 zones respectivement Nord(N) - Est(E) - Sud(S) - Ouest(W)
 	private Integer[] determinerPositionVoisins() {
 		Integer[] res = new Integer[4];
-		// Nous pouvons définir 2 droites (considérons notre blob (x;y) et le voisin (X;Y) ):
+		// Nous pouvons dÃ©finir 2 droites (considÃ©rons notre blob (x;y) et le voisin (X;Y) ):
 		// (d1) separant W-N de S-W :  Y = X + (y-x)
 		// (d2) separant N-E de W-S :  Y = -X + (y+x)
 		try {
@@ -154,14 +155,14 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 				coo = voisin.getBlob().getCoordonnee();
 				if(coo[1] > coo[0] + ordonnee1)
 					if(coo[1] > -coo[0] + ordonnee2)
-						res[0]++; //appartient à la zone Nord
+						res[0]++; //appartient Ã  la zone Nord
 					else
-						res[3]++; // appartient à la zone West
+						res[3]++; // appartient Ã  la zone West
 				else
 					if(coo[1] < -coo[0] + ordonnee2)
-						res[2]++;  // appartient à la zone Sud
+						res[2]++;  // appartient Ã  la zone Sud
 					else
-						res[1]++;	//appartient à la zone Est			
+						res[1]++;	//appartient Ã  la zone Est			
 			}
 		}  catch(Exception e)
 		{
@@ -186,7 +187,7 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	
 	protected void majAspectAgent(){
 		try {
-			// La forme s'acquiert a partir d'un nombre d'expï¿½rience atteint.
+			// La forme s'acquiert a partir d'un nombre d'expÃ¯Â¿Â½rience atteint.
 			if (nbExperience >= nbExperiencesRequises)
 			{
 				synchronized (getBlob().lock) {
@@ -256,6 +257,8 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	 * **************************************************************** */
 	
 	protected void action_se_suicider(){
+
+		Log.debug("quela", "imag decide suicide");
 		try {
 			currentAction = Action.SE_SUICIDER;
 			getAmas().getEnvironment().removeAgent(this);
@@ -268,12 +271,24 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 	}
 
 	protected void action_creer(){
+
+		Log.debug("quela", "imag decide creer");
 		try {
 			currentAction = Action.CREER;
+			Log.debug("quela", "imag decide copy");
 			Blob newBlob = blob.copy_blob();
-			newBlob.setCoordonnee(getAmas().getEnvironment().nouvellesCoordonnees(this, 2));
+			//newBlob.setCoordonnee(convert(newBlob.getCoordonnee()));
+			Log.debug("quela", "imag decide setcoord");
+			Log.debug("coord", "coord "+newBlob.getCoordonnee());
+			
+			
+			newBlob.setCoordonnee((getAmas().getEnvironment().nouvellesCoordonneesTT(this, 2, newBlob.getCoordonnee())));
+			Log.debug("quela", "imag decide newfils");
 			newFils = new Immaginaire(getAmas(), newBlob, controller);
-			getAmas().getEnvironment().addAgent(newFils);
+
+			//getAmas().getEnvironment().addAgent(newFils);
+			//Log.debug("quela", "imag decide addagent");
+
 		}  catch(Exception e)
 		{
 			ExceptionHandler eh = new ExceptionHandler();
@@ -282,6 +297,14 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		
 	}
 	
+	private double[] convert(double[] nouvellesCoordonnees) {
+		return new double[] {
+				nouvellesCoordonnees[0]*12.5/50.0,
+				nouvellesCoordonnees[1]*12.5/50.0
+		};
+	}
+
+
 	protected void action_se_deplacer(){
 		try {
 			double[] tmp = getAmas().getEnvironment().nouvellesCoordonnees(this, Math.random() * 1.2, pastDirection);
@@ -312,7 +335,10 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 			Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
 			ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
 			for (int i = 0; i < listeGlobulesCouleur.size(); i++){
-				if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
+				Couleur couleur = listeGlobulesCouleur.get(i);
+				if (couleur == null)
+					couleur = Couleur.BLUE;
+				if (couleur.equals(MostPresentCouleur))
 					listeGlobulesCouleur.set(i, nvlleCouleur);
 			}
 			nbChangements++;
@@ -331,7 +357,12 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 			Couleur MostPresentCouleur = blob.getCouleurLaPLusPresente();
 			ArrayList<Couleur> listeGlobulesCouleur = blob.getGlobules_couleurs();
 			for (int i = 0; i < listeGlobulesCouleur.size(); i++){
-				if (listeGlobulesCouleur.get(i).equals(MostPresentCouleur))
+				System.out.println(listeGlobulesCouleur);
+				Couleur couleur2 = listeGlobulesCouleur.get(i);
+				if (couleur2 == null)
+					couleur2 = Couleur.BLUE;
+				
+				if (couleur2.equals(MostPresentCouleur))
 					listeGlobulesCouleur.set(i, couleur);
 			}
 			nbChangements++;
@@ -366,11 +397,13 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		HashMap<Couleur, Integer> couleurs = new HashMap<>();
 		Couleur couleur;
 		for(int i = 0; i < voisins.size() ; i++){
-			couleur = voisins.get(i).getBlob().getCouleurLaPLusPresente();
-			if (couleurs.containsKey(couleur))
-				couleurs.put(couleur, 1 + couleurs.get(couleur));
-			else
-				couleurs.put(couleur, 1);
+			synchronized(voisins.get(i).getBlob().lock) {
+				couleur = voisins.get(i).getBlob().getCouleurLaPLusPresente();
+				if (couleurs.containsKey(couleur))
+					couleurs.put(couleur, 1 + couleurs.get(couleur));
+				else
+					couleurs.put(couleur, 1);
+			}
 		}
 		
 		// recuperation de la couleur la plus presente.
@@ -381,7 +414,13 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 			if (( tmp = couleurs.get(clr)) > maxNbCouleur)
 			{
 				maxNbCouleur = tmp;
+				
 				couleurEnvironnante = clr;
+				
+				if (couleurEnvironnante == null) {
+					System.err.println("couleur environnante null");
+					System.exit(-1);
+				}
 			}
 		}
 		
@@ -405,12 +444,12 @@ public class BlobAgent extends Agent<MyAMAS, MyEnvironment>{
 		if(nbBougent < nbOptimal)
 			return(nbOptimal - nbBougent); 
 
-		// le problème, si trop de blobs bougent autour, je ne veux pas lever la criticité, afin d'espérer agir pour une autre criticité.
+		// le problÃ¨me, si trop de blobs bougent autour, je ne veux pas lever la criticitÃ©, afin d'espÃ©rer agir pour une autre criticitÃ©.
 		return(0);
 	}
 	
 	/*protected double computeCriticalityStabiliteEtat(){
-		// calcule de la moyenne des changements effectués alentour:
+		// calcule de la moyenne des changements effectuÃ©s alentour:
 		double moyenne = 0;
 		for (int i = 0; i< voisins.size(); i++){
 			moyenne += voisins.get(i).getNbChangements();

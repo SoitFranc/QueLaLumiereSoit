@@ -55,7 +55,7 @@ public class ServerThread extends Thread{
 		try {
 			socket = new ServerSocket(serverPort);
 			running = true;
-			new Thread(this).start();
+			//new Thread(this).start();
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
@@ -68,6 +68,7 @@ public class ServerThread extends Thread{
 		double tmp[] = new double[2];
 		// coo suivants à remplacer par les vrais checkpoints
 		// à l'IRIT :
+		/*
 		tmp[0] = 43.56226037;
 		tmp[1] = 1.46760197;
 		checkpoints.add(tmp.clone());
@@ -80,6 +81,27 @@ public class ServerThread extends Thread{
 		tmp[0] = 43.5620397;
 		tmp[1] = 1.46780492;
 		checkpoints.add(tmp.clone());
+		*/
+		
+		// boule du CMES :
+		tmp[0] = 43.57992918;
+		tmp[1] = 1.46328402;
+		checkpoints.add(tmp.clone());
+		tmp[0] = 43.58000378;
+		tmp[1] = 1.46324747;
+		checkpoints.add(tmp.clone());
+		tmp[0] = 43.5799379;
+		tmp[1] = 1.46348318;
+		checkpoints.add(tmp.clone());
+		tmp[0] = 43.58000756;
+		tmp[1] = 1.46349998;
+		checkpoints.add(tmp.clone());
+		tmp[0] = 43.58008816;
+		tmp[1] = 1.46339072;
+		checkpoints.add(tmp.clone());
+		
+		
+		
 		
 		System.out.println("calculons les coo du cercle");
 		calculCooCercle(checkpoints);

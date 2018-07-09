@@ -18,7 +18,10 @@ public class TerrainForm extends Parent {
 	private double rayonSalle = 12.5; // rayon de la salle d'exposition en m
 	private double rayonRepresentation = 175;	// rayon de la représentation en pxl
 	private int tailleBlob = 16; 
-
+	
+	
+	
+	
 	public TerrainForm() {
 		// blobList = new ArrayList<Blob>();
 		blobList = new HashMap<Blob, BlobForm>();
@@ -30,6 +33,22 @@ public class TerrainForm extends Parent {
 		fond_Terrain.setHeight(300);
 		fond_Terrain.setArcWidth(30);
 		fond_Terrain.setArcHeight(30);*/
+		fond_Terrain.setFill(Color.BLACK);
+
+		this.setTranslateX(0);// on positionne le groupe plutôt que le rectangle
+		this.setTranslateY(0);
+
+		this.getChildren().add(fond_Terrain);// on ajoute le rectangle au groupe
+
+	}
+	
+	public TerrainForm(int rayonRepresentation) {
+		this.rayonRepresentation = (double) rayonRepresentation;
+		tailleBlob = tailleBlob * rayonRepresentation / 175 ;
+		//TerrainForm();
+		blobList = new HashMap<Blob, BlobForm>();
+
+		Circle fond_Terrain = new Circle(rayonRepresentation, rayonRepresentation, rayonRepresentation);
 		fond_Terrain.setFill(Color.BLACK);
 
 		this.setTranslateX(0);// on positionne le groupe plutôt que le rectangle

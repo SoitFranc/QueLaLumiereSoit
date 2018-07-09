@@ -1,9 +1,11 @@
 package application;
 
+import fr.irit.smac.amak.tools.Log;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -16,11 +18,14 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-
+			Log.debugTagFilter = "^$";
+			Log.enabled = false;
+			
+			
             Stage menu = new Stage();
             
             Button b_test = new Button("Test");
-            Button b_exp = new Button("Expérience");
+            Button b_exp = new Button("Expï¿½rience");
             
             primaryStage.setTitle("Comme un blob");
 			primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("icon_blob.png")));

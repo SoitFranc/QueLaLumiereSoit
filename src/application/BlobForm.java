@@ -52,8 +52,10 @@ public class BlobForm extends Parent{
 			globules.clear();
 			for(int i = 0 ; i < positionGlobule.size(); i++)
 			{
-				
-				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleurGlobule.get(i).getColor(couleurGlobule.get(i)) ); 
+				Couleur couleur = couleurGlobule.get(i);
+				if (couleur == null)
+					couleur = Couleur.BLUE;
+				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleur.getColor(couleur) ); 
 				fond_blob.setEffect(boxBlur);
 				globules.add(fond_blob);
 		        this.getChildren().add(fond_blob);//ajout du rectangle de fond			
@@ -118,7 +120,10 @@ public class BlobForm extends Parent{
 			globules.clear();
 			for(int i = 0 ; i < positionGlobule.size(); i++)
 			{
-				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleurGlobule.get(i).getColor(couleurGlobule.get(i)) ); 
+				Couleur couleur = couleurGlobule.get(i);
+				if (couleur == null)
+					couleur = Couleur.BLUE;
+				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleur.getColor(couleur) ); 
 				fond_blob.setEffect(boxBlur);
 				globules.add(fond_blob);
 		        this.getChildren().add(fond_blob);//ajout du globule	
@@ -145,7 +150,10 @@ public class BlobForm extends Parent{
 					
 			for(int i = 0 ; i < positionGlobule.size(); i++)
 			{
-				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleurGlobule.get(i).getColor(couleurGlobule.get(i)) ); 
+				Couleur couleur = couleurGlobule.get(i);
+				if (couleur == null)
+					couleur = Couleur.BLUE;
+				fond_blob = new Circle(positionGlobule.get(i)[0] ,positionGlobule.get(i)[1] ,tailleBlob/6, couleur.getColor(couleur) ); 
 				fond_blob.setEffect(boxBlur);
 				globules.add(fond_blob);
 		        this.getChildren().add(fond_blob);//ajout du globule	
@@ -153,8 +161,8 @@ public class BlobForm extends Parent{
 		}
 	}
 	
-	// cette fonction est appelée si le globule n'est pas mûr et doit être repésenté blanc.
-	// la couleur blanche est donc donnée en paramètre.
+	// cette fonction est appelï¿½e si le globule n'est pas mï¿½r et doit ï¿½tre repï¿½sentï¿½ blanc.
+	// la couleur blanche est donc donnï¿½e en paramï¿½tre.
 	public void changeBlob(Blob b, double[] coo, Color couleur, int tailleBlob){
 		
 		synchronized(b.lock)

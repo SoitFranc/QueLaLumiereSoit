@@ -4,6 +4,7 @@ import application.Controller;
 import application.ExceptionHandler;
 import business.Blob;
 import business.Critere;
+import fr.irit.smac.amak.tools.Log;
 
 public class Immaginaire extends BlobAgent{
 
@@ -19,7 +20,7 @@ public class Immaginaire extends BlobAgent{
 	
 	@Override
     protected void onUpdateRender() {
-		if (tps + 1000 < System.currentTimeMillis() && !(currentAction.equals(Action.CREER) || currentAction.equals(Action.MURIR))) {
+		if (tps + 1000 < System.currentTimeMillis() && !(currentAction.equals(Action.CREER) || currentAction.equals(Action.SE_SUICIDER))) {
 			return;
 		}
 		tps = System.currentTimeMillis();
@@ -74,7 +75,7 @@ public class Immaginaire extends BlobAgent{
 				 currentAction = Action.RESTER; // to initialise
 			     BlobAgent agentNeedingHelp = super.getMoreCriticalAgent();
 				 Critere most_critic = Most_critical_critere(agentNeedingHelp.getCriticite());
-				 //System.out.println("criticite de stabilité de position = " + criticite[Critere.Stabilite_position.getValue()]);
+				 //System.out.println("criticite de stabilitï¿½ de position = " + criticite[Critere.Stabilite_position.getValue()]);
 				 //System.out.println("le plus critique est : " + most_critic.toString());
 				 
 				 switch (most_critic){
@@ -87,16 +88,19 @@ public class Immaginaire extends BlobAgent{
 					 break;
 						 
 				 case Stabilite_etat:
-					 
+
+						Log.debug("quela", "imag decide stabeta");
 					 
 					 
 					 break;
 					 
 				 case Stabilite_position:
+						Log.debug("quela", "imag decide stab pos");
 					 action_se_deplacer();
 					 break;
 					 
 				 case Heterogeneite:
+						Log.debug("quela", "imag decide eheteroge");
 					 //System.out.println(" \t avec : " + criticite[Critere.Heterogeneite.getValue()]);
 					// if >0 then it's too homogeneous. --> I change the color in a random one.
 					 // else it's too heterogeneous.  -> I change my color to the most present color
@@ -110,16 +114,26 @@ public class Immaginaire extends BlobAgent{
 					break;		 
 				 }
 			}
-			
+
+			Log.debug("quela", "imag decide before super decide and act");
 			super.onDecideAndAct();
+
+			Log.debug("quela", "imag decide before catch");
 		} catch(Exception e)
 		{
+			Log.debug("quela", "imag decide catch");
 			ExceptionHandler eh = new ExceptionHandler();
 			eh.showError(e);
 		}
+		Log.debug("quela", "end da immag");
 	}
 	
-	
+protected void onAgentCycleEnd() {
+		
+		if(currentAction.equals(Action.CREER))
+			getAmas().getEnvironment().addAgent(newFils);
+		super.onAgentCycleEnd();
+	}
 	
 
 }
