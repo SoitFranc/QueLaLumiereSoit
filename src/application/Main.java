@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -25,7 +24,7 @@ public class Main extends Application {
             Stage menu = new Stage();
             
             Button b_test = new Button("Test");
-            Button b_exp = new Button("Expï¿½rience");
+            Button b_exp = new Button("Expérience");
             
             primaryStage.setTitle("Comme un blob");
 			primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("icon_blob.png")));

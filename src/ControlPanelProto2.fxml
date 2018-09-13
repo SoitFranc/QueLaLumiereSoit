@@ -166,7 +166,7 @@
                            <children>
                               <TabPane blendMode="SOFT_LIGHT" layoutX="3.0" layoutY="-5.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" pickOnBounds="false" prefHeight="348.0" prefWidth="638.0" styleClass="background" tabClosingPolicy="UNAVAILABLE">
                                 <tabs>
-                                  <Tab text="apperçu du BLob">
+                                  <Tab text="aperçu du BLob">
                                     <content>
                                       <AnchorPane fx:id="panelBlobSelectione" minHeight="-Infinity" minWidth="-Infinity" prefHeight="302.0" prefWidth="638.0" styleClass="background">
                                              <children>

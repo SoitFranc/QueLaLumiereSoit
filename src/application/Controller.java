@@ -27,13 +27,18 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import position.PositionSimulationThread;
 import position.ServerThreadAcceleration;
 import javafx.fxml.Initializable;
 
+/**
+ * 
+ * 
+ * @author François Beuvin avec Claire et Michael
+ *
+ */
 public class Controller implements Initializable{
 	
 	private boolean experience;
@@ -374,10 +379,10 @@ public class Controller implements Initializable{
 		paneAppercuBlob.getChildren().add(appercuBlob);
 		
 		// J'initialise chaque sliders.
-		Sdiso.setValue(10);
-		sHeterogeneite.setValue(50);
-		sStabilitePosition.setValue(75);
-		sRadiusVoisins.setValue(7);
+		Sdiso.setValue(5);
+		sHeterogeneite.setValue(99);
+		sStabilitePosition.setValue(100);
+		sRadiusVoisins.setValue(11);
 		blobActifs = new ArrayList<>();
 		blobHibernants = new ArrayList<>();
 		
@@ -413,6 +418,7 @@ public class Controller implements Initializable{
 
 		towindow.initStyle(StageStyle.UNDECORATED);
 		toriginel_exp = new ToForm(1075);
+		toriginel_exp.putStroke();
 
 		towindow.setTitle("Territoire Originel");
 		towindow.getIcons().add(new Image(Main.class.getResourceAsStream("icon_blob.png")));
@@ -420,7 +426,7 @@ public class Controller implements Initializable{
 		
 		configTerrain(towindow, toriginel_exp);
 		
-		Scene scene = new Scene(toriginel_exp, Color.rgb(42, 42, 42));
+		Scene scene = new Scene(toriginel_exp, Color.rgb(0, 0, 0));
 		
 		towindow.setScene(scene);
 		towindow.show();
@@ -432,12 +438,13 @@ public class Controller implements Initializable{
 
 		tiwindow.initStyle(StageStyle.UNDECORATED);
 		tideal_exp = new TerrainForm(1000/2);
-
+		tideal_exp.putStroke();
+		
 		tiwindow.setTitle("Territoire Ideal");
 		tiwindow.getIcons().add(new Image(Main.class.getResourceAsStream("icon_blob.png")));
 		configTerrain(tiwindow, tideal_exp);
 
-		tiwindow.setScene(new Scene(tideal_exp, Color.rgb(42, 42, 42)));
+		tiwindow.setScene(new Scene(tideal_exp, Color.rgb(0, 0, 0)));
 		tiwindow.show();
 	}
 	
@@ -518,7 +525,9 @@ public class Controller implements Initializable{
 	public int getHeterogenite(){
 		return(sHeterogeneite.valueProperty().intValue());
 	}
-	
+	public int getRadius(){
+		return(sRadiusVoisins.valueProperty().intValue());
+	}
 	
 	public int getStabilitePosition(){
 		return(sStabilitePosition.valueProperty().intValue());
